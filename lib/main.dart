@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:tp_cm_2022/repositories/preferences_repository.dart';
 
 import 'ui/screens/home.dart';
+import 'ui/screens/viewpokemon.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/home': (context) => const Home(),
+        '/viewPokemon': (context) => const ViewPokemon(),
       },
       initialRoute: '/home',
     );

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:projet_pokemon/models/pokemon.dart';
 import 'package:projet_pokemon/repositories/pokemon_repository.dart';
+import 'package:projet_pokemon/ui/screens/viewpokemon.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,8 +15,10 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   final PokemonRepository _pokemonRepository = PokemonRepository();
-  Timer? _timer;
+  final TextEditingController _nameEditingController = TextEditingController();
+
   List<Pokemon> _pokemons = [];
+  Timer? _timer;
   @override
 
   void initState(){
@@ -32,25 +35,50 @@ class _HomeState extends State<Home> {
       body: Column(
         children:[
           TextField(
+            controller: _nameEditingController,
             onChanged: (value) {
               if (value.length >= 3) {
                 _timer?.cancel();
                 _timer = Timer(const Duration(milliseconds: 500), () {
                   _pokemonRepository.fetchPokemon(value).then((result) {
                     setState(() {
-                      // _pokemons = result;
+                      _pokemons = result;
                     });
                   }, onError: (e, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Une erreur est survenue')));
+                      content: Text('Une erreur est survenue')));
                   });
                 });
               }
             },
             decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                labelText: "Nom du pokemon"),
+              prefixIcon: Icon(Icons.search),
+              labelText: "Nom du pokemon"
+            ),
           ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _pokemons.length,
+              itemBuilder: (context, index) {
+                final Pokemon pokemon = _pokemons[index];
+                return ListTile(
+                  onTap: () => Navigator.pushNamed(context, "/viewPokemon", arguments: pokemon),
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage(pokemon.skin),
+                  ),
+                  title: Text(
+                    '${pokemon.name}',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text(
+                    pokemon.types.forEach((value)=>
+                      '${value.name}',
+                    )
+                  ),
+                );
+              }
+            )
+          )
         ],
       ),
     );
